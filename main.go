@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
+	"time"
 
 	utils "github.com/saksham2410/getmega/helpers"
 	"github.com/saksham2410/getmega/models"
 	"github.com/saksham2410/getmega/team"
+	"github.com/wangjia184/sortedset"
 )
 
 // var playersOnline int
@@ -15,6 +18,12 @@ var wg sync.WaitGroup
 type Player struct {
 	Name  string
 	Level float32
+	// ReceiveChan chan
+}
+type Players *sortedset.SortedSet
+type Team struct {
+	TeamID int
+	// ReceiveChan chan
 }
 
 // func numPlayers(nm []models.Player) bool {
@@ -27,18 +36,21 @@ type Player struct {
 // }
 
 // type allPlayers struct := []models.Player{}
-func addPlayer(online *int, mm *[]models.Player, name string, level float32, c chan int) {
+func addPlayer(players *sortedset.SortedSet, online *int, mm *[]models.Player, name string, level float32, c chan int) {
 	*online++
 	newPlayer := models.Player{
 		Name:  name,
 		Level: level,
 	}
+	fmt.Println(*online)
+	players.AddOrUpdate(strconv.Itoa(*online), sortedset.SCORE(level), newPlayer)
 	*mm = append(*mm, newPlayer)
 	fmt.Printf("New Player: %+v \n", newPlayer)
-	fmt.Println(mm)
-	select *online == 1 {
-		c <- *online
-	  }
+	fmt.Println(*mm)
+	// if *online != 1 {
+	c <- *online
+	fmt.Println("Reached here")
+	// }
 }
 
 func getAllPlayers(mm []models.Player) {
@@ -119,13 +131,22 @@ func main() {
 	playersOnline := 0
 	c := make(chan int)
 	mm := &[]models.Player{}
-	go addPlayer(&playersOnline, mm, "saksham", 5, c)
+	Players := sortedset.New()
+	go addPlayer(Players, &playersOnline, mm, "saksham", 5, c)
 	fmt.Println(<-c)
-	go addPlayer(&playersOnline, mm, "saksham2", 50, c)
-	fmt.Println(<-c)
-	go addPlayer(&playersOnline, mm, "saksham3", 10, c)
-	fmt.Println(<-c)
-	go addPlayer(&playersOnline, mm, "saksham4", 20, c)
-	fmt.Println(<-c)
+	Players.AddOrUpdate("2", 10, "saksham")
+	fmt.Println(*Players.GetByKey(strconv.Itoa(1)))
+	fmt.Println(*Players.GetByKey(strconv.Itoa(2)))
+	fmt.Println(Players.GetByScoreRange(0, 11, &sortedset.GetByScoreRangeOptions{
+		Limit: 2,
+	}), "These values will be returned")
+	// c1 := make(chan int)
+	// go addPlayer(&playersOnline, mm, "saksham2", 50, c1)
+	// fmt.Println(<-c1)
+	// go addPlayer(&playersOnline, mm, "saksham3", 10, c)
+	// fmt.Println(<-c)
+	// go addPlayer(&playersOnline, mm, "saksham4", 20, c)
+	// fmt.Println(<-c)
 	getAllPlayers(*mm)
+	time.Sleep(time.Second * 2)
 }

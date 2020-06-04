@@ -5,27 +5,17 @@ import (
 	"gonum.org/v1/gonum/stat/combin"
 )
 
-func MakePair(ch chan models.CanMatch, n int, k int, typeofmatch int) {
+func MakePair(ch chan models.CanMatch, n int, k int) {
 	totalPairs := combin.Combinations(n, k)
 
-	if typeofmatch == 0 {
-		for i := 0; i < len(totalPairs)-1; i++ {
-			cM := models.PossibleTeams{
-				Team: totalPairs[i],
-			}
-			ch <- cM
-		}
-	}
-	if typeofmatch == 1 {
-		for i := 0; i < len(totalPairs)-1; i++ {
-			for j := i + 1; j < len(totalPairs); j++ {
-				if checkDuplicate(totalPairs[j], totalPairs[i]) {
-					cM := models.CanMatch{
-						Team1: totalPairs[i],
-						Team2: totalPairs[j],
-					}
-					ch <- cM
+	for i := 0; i < len(totalPairs)-1; i++ {
+		for j := i + 1; j < len(totalPairs); j++ {
+			if checkDuplicate(totalPairs[j], totalPairs[i]) {
+				cM := models.CanMatch{
+					Team1: totalPairs[i],
+					Team2: totalPairs[j],
 				}
+				ch <- cM
 			}
 		}
 	}

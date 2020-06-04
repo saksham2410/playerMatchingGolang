@@ -1,4 +1,5 @@
 package models
+import("github.com/wangjia184/sortedset")
 
 type RoomMaker struct {
 	//accessing db
@@ -6,10 +7,6 @@ type RoomMaker struct {
 type CanMatch struct {
 	Team1 []int
 	Team2 []int
-}
-
-type PossibleTeams struct {
-	Team []int
 }
 
 //Defined 2 teams that will participate
@@ -24,11 +21,11 @@ type SingleMatch struct {
 type Player struct {
 	Name  string
 	Level float32
+	// ReceiveChan chan
 }
 type Team struct {
 	TeamID      int64
 	AverageRank float32 //Average rank of the team
 	Players     []Player
-	minClients int
-	maxClients int
+	PlayerQueue	*sortedset.SortedSet
 }
