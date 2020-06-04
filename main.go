@@ -36,9 +36,9 @@ func addPlayer(online *int, mm *[]models.Player, name string, level float32, c c
 	*mm = append(*mm, newPlayer)
 	fmt.Printf("New Player: %+v \n", newPlayer)
 	fmt.Println(mm)
-	if *online != 1 {
+	select *online == 1 {
 		c <- *online
-	}
+	  }
 }
 
 func getAllPlayers(mm []models.Player) {

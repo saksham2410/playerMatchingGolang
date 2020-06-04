@@ -8,6 +8,10 @@ type CanMatch struct {
 	Team2 []int
 }
 
+type PossibleTeams struct {
+	Team []int
+}
+
 //Defined 2 teams that will participate
 type Match struct {
 	Team1 Team
@@ -25,4 +29,6 @@ type Team struct {
 	TeamID      int64
 	AverageRank float32 //Average rank of the team
 	Players     []Player
+	minClients int
+	maxClients int
 }
